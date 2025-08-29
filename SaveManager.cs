@@ -14,7 +14,7 @@ public class SaveManager : MonoBehaviour
     [Range(0, 7)] public int SaveSlot;
     public string GetSlot() { return "_" + SaveSlot.ToString(); }
     public static SaveManager Instance { get; private set; }
-    string encodePassword = "hw_multi_mjsdhf457332_";
+    string encodePassword = "randomPAss235421mdfsnkde";
     public Action OnGameSaving;
     public Action OnGameLoading;
 

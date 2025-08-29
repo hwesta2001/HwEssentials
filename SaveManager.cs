@@ -12,9 +12,9 @@ public class SaveManager : MonoBehaviour
 {
     [SerializeField, TextArea(0, 5)] string savePaths;
     [Range(0, 7)] public int SaveSlot;
+    readonly string encodePassword = "randm_";
     public string GetSlot() { return "_" + SaveSlot.ToString(); }
     public static SaveManager Instance { get; private set; }
-    string encodePassword = "randomPAss235421mdfsnkde";
     public Action OnGameSaving;
     public Action OnGameLoading;
 
@@ -34,54 +34,49 @@ public class SaveManager : MonoBehaviour
         SaveGame.EncodePassword = encodePassword;
     }
 
-    public static void Save_Game()
+    public void Save_Game()
     {
-        Instance.OnGameSaving?.Invoke();
+        OnGameSaving?.Invoke();
         Debug.LogWarning("OnGameSaving?.Invoke()");
     }
-    public static void Load_Game()
+    public void Load_Game()
     {
         Debug.LogWarning("OnGameLoading?.Invoke()");
-        Instance.OnGameLoading?.Invoke();
+        OnGameLoading?.Invoke();
     }
 
-    public void Save<T>(string s, T entity)
+    public static void Save<T>(string saveKey, T entity, bool encoding = false)
     {
-        SaveGame.Save<T>(s + GetSlot(), entity);
+        SaveGame.Save<T>(saveKey + Instance.GetSlot(), entity, encoding);
     }
 
-    public void Save<T>(string s, T entity, bool encoding)
+    public static T Load<T>(string saveKey)
     {
-        SaveGame.Save<T>(s + GetSlot(), entity, encoding);
+        return SaveGame.Load<T>(saveKey + Instance.GetSlot());
     }
 
-    public T Load<T>(string s)
+    public static T Load<T>(string saveKey, T defaultValue)
     {
-        return SaveGame.Load<T>(s + GetSlot());
+        return SaveGame.Load<T>(saveKey + Instance.GetSlot(), defaultValue);
+    }
+    public static T Load<T>(string saveKey, bool encode)
+    {
+        return SaveGame.Load<T>(saveKey + Instance.GetSlot(), encode, Instance.encodePassword);
     }
 
-    public T Load<T>(string s, T defaultValue)
+    public static bool Exists(string saveKey)
     {
-        return SaveGame.Load<T>(s + GetSlot(), defaultValue);
-    }
-    public T Load<T>(string s, bool encode)
-    {
-        return SaveGame.Load<T>(s + GetSlot(), encode, encodePassword);
+        return SaveGame.Exists(saveKey + Instance.GetSlot());
     }
 
-    public bool Exists(string s)
+    public static void DeleteKey(string saveKey)
     {
-        return SaveGame.Exists(s + GetSlot());
+        if (Exists(saveKey + Instance.GetSlot())) SaveGame.Delete(saveKey + Instance.GetSlot());
     }
 
-    public void DeleteKey(string s)
+    public static void DeleteSlot_0(string saveKey)
     {
-        if (Exists(s + GetSlot())) SaveGame.Delete(s + GetSlot());
-    }
-
-    public static void DeleteSlot_0(string s)
-    {
-        SaveGame.Delete(s + "_0");
+        SaveGame.Delete(saveKey + "_0");
     }
 
     public void DeleteAllKeys()
